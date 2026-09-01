@@ -3,21 +3,44 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+val releaseKeystorePath = System.getenv("KEYSTORE_PATH")
+val releaseStorePassword = System.getenv("KEYSTORE_PASSWORD")
+val releaseKeyAlias = System.getenv("KEY_ALIAS")
+val releaseKeyPassword = System.getenv("KEY_PASSWORD")
+val hasReleaseSigning = !releaseKeystorePath.isNullOrBlank()
+
+val appVersionCode = (project.findProperty("versionCode") as String?)?.toIntOrNull() ?: 1
+val appVersionName = project.findProperty("versionName") as String? ?: "1.0"
+
 android {
-    namespace = "com.diego.scanpdf"
+    namespace = "com.smalegon.scanpdf"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.diego.scanpdf"
+        applicationId = "com.smalegon.scanpdf"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
+    }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseKeystorePath!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

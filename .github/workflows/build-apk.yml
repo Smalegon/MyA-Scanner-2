@@ -1,4 +1,4 @@
-name: Compilar APK
+name: Compilar APK y AAB
 
 on:
   push:
@@ -21,11 +21,35 @@ jobs:
       - name: Dar permiso de ejecución a gradlew
         run: chmod +x gradlew
 
-      - name: Compilar el APK (versión debug, instalable directamente)
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Preparar la clave de firma (desde los "Secrets" del repositorio)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          else
+            echo "No hay KEYSTORE_BASE64 configurado todavía: se compilará sin firmar."
+          fi
 
-      - name: Subir el APK como archivo descargable
+      - name: Compilar APK y AAB (versión release, firmada)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew assembleRelease bundleRelease --stacktrace \
+            -PversionCode=${{ github.run_number }} \
+            -PversionName=1.0.${{ github.run_number }}
+
+      - name: Subir el APK (para instalar directo en un celular)
         uses: actions/upload-artifact@v4
         with:
           name: EscanerPDF-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Subir el AAB (para subir a Play Console)
+        uses: actions/upload-artifact@v4
+        with:
+          name: EscanerPDF-aab
+          path: app/build/outputs/bundle/release/app-release.aab

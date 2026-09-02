@@ -14,12 +14,12 @@ val appVersionName = project.findProperty("versionName") as String? ?: "1.0"
 
 android {
     namespace = "com.smalegon.scanpdf"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.smalegon.scanpdf"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = appVersionCode
         versionName = appVersionName
     }

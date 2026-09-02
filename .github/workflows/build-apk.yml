@@ -1,5 +1,7 @@
 name: Compilar APK y AAB
 
+# Se ejecuta automáticamente cada vez que subes o cambias archivos,
+# y también se puede lanzar a mano desde la pestaña "Actions" en GitHub.
 on:
   push:
   workflow_dispatch:
@@ -9,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar el código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Instalar Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
@@ -43,13 +45,13 @@ jobs:
             -PversionName=1.0.${{ github.run_number }}
 
       - name: Subir el APK (para instalar directo en un celular)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: EscanerPDF-apk
           path: app/build/outputs/apk/release/app-release.apk
 
       - name: Subir el AAB (para subir a Play Console)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: EscanerPDF-aab
           path: app/build/outputs/bundle/release/app-release.aab

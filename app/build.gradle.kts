@@ -1,14 +1,23 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
+// --- Firma de la app (para actualizar sin desinstalar, y subir a Play Console) ---
+// Estos valores llegan como variables de entorno desde GitHub Actions (ver build-apk.yml).
+// Si no están presentes (por ejemplo, si alguien compila el proyecto localmente sin
+// configurarlas), la app "release" simplemente queda sin firmar en vez de fallar.
 val releaseKeystorePath = System.getenv("KEYSTORE_PATH")
 val releaseStorePassword = System.getenv("KEYSTORE_PASSWORD")
 val releaseKeyAlias = System.getenv("KEY_ALIAS")
 val releaseKeyPassword = System.getenv("KEY_PASSWORD")
 val hasReleaseSigning = !releaseKeystorePath.isNullOrBlank()
 
+// --- Número de versión (para que cada compilación sea "más nueva" que la anterior) ---
+// GitHub Actions pasa estos valores automáticamente (-PversionCode=... -PversionName=...).
+// Si compilas localmente sin pasarlos, se usan estos valores por defecto.
 val appVersionCode = (project.findProperty("versionCode") as String?)?.toIntOrNull() ?: 1
 val appVersionName = project.findProperty("versionName") as String? ?: "1.0"
 
@@ -49,12 +58,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     buildFeatures {
         viewBinding = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

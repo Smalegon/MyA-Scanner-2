@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity() {
     // Carpeta elegida por el usuario para guardar los PDF (persistida entre sesiones)
     private var savedFolderUri: Uri? = null
 
+    // true mientras esperamos que el usuario elija carpeta como parte de "Guardar y compartir"
+    // (para, apenas la elija, seguir con el guardado + compartir en vez de quedarnos a medias)
+    private var pendingSaveAndShare = false
+
     private val prefs by lazy { getSharedPreferences("scanpdf_prefs", MODE_PRIVATE) }
 
     // --- Lanzador que abre la pantalla de escaneo de Google y recibe el resultado ---
@@ -49,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                     currentPdfFile = savedFile
                     binding.tvStatus.text =
                         "✅ Escaneado: ${pdf.pageCount} página(s) — ${savedFile.name}"
+                    binding.btnSaveAndShare.isEnabled = true
                     binding.btnSave.isEnabled = true
                     binding.btnShare.isEnabled = true
                 } else {
@@ -73,6 +78,13 @@ class MainActivity : AppCompatActivity() {
             savedFolderUri = uri
             prefs.edit().putString(KEY_FOLDER_URI, uri.toString()).apply()
             updateFolderLabel()
+
+            if (pendingSaveAndShare) {
+                pendingSaveAndShare = false
+                saveAndShare()
+            }
+        } else {
+            pendingSaveAndShare = false
         }
     }
 
@@ -89,6 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnScan.setOnClickListener { startScan() }
         binding.btnChooseFolder.setOnClickListener { folderPickerLauncher.launch(null) }
+        binding.btnSaveAndShare.setOnClickListener { saveAndShare() }
         binding.btnSave.setOnClickListener { saveToChosenFolder() }
         binding.btnShare.setOnClickListener { shareCurrentPdf() }
     }
@@ -147,35 +160,58 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveToChosenFolder() {
+    /** Guarda el PDF en la carpeta elegida. Devuelve true solo si lo logró guardar
+     *  (por ejemplo, devuelve false si todavía no hay carpeta elegida — en ese caso
+     *  abre el selector de carpeta y el usuario tiene que volver a tocar el botón). */
+    private fun saveToChosenFolder(): Boolean {
         val pdfFile = currentPdfFile ?: run {
             toast("Primero escanea un documento.")
-            return
+            return false
         }
         val folderUri = savedFolderUri
         if (folderUri == null) {
             toast("Primero elige una carpeta para guardar.")
             folderPickerLauncher.launch(null)
-            return
+            return false
         }
 
-        try {
+        return try {
             val folderDoc = DocumentFile.fromTreeUri(this, folderUri)
             if (folderDoc == null || !folderDoc.canWrite()) {
                 toast("No se puede escribir en esa carpeta. Elige otra.")
-                return
+                return false
             }
             val newFile = folderDoc.createFile("application/pdf", pdfFile.nameWithoutExtension)
                 ?: run {
                     toast("No se pudo crear el archivo en la carpeta.")
-                    return
+                    return false
                 }
             contentResolver.openOutputStream(newFile.uri)?.use { output ->
                 pdfFile.inputStream().use { input -> input.copyTo(output) }
             }
             toast("PDF guardado en la carpeta ✅")
+            true
         } catch (e: Exception) {
             toast("Error al guardar: ${e.message}")
+            false
+        }
+    }
+
+    /** Botón "Guardar y compartir": guarda en la carpeta elegida y, si se guardó bien,
+     *  abre el selector para compartir. Si todavía no hay carpeta elegida, primero pide
+     *  elegirla y continúa sola apenas el usuario la elige (ver folderPickerLauncher). */
+    private fun saveAndShare() {
+        if (currentPdfFile == null) {
+            toast("Primero escanea un documento.")
+            return
+        }
+        if (savedFolderUri == null) {
+            pendingSaveAndShare = true
+            folderPickerLauncher.launch(null)
+            return
+        }
+        if (saveToChosenFolder()) {
+            shareCurrentPdf()
         }
     }
 

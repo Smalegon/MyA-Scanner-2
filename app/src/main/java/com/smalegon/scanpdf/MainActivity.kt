@@ -93,7 +93,23 @@ class MainActivity : AppCompatActivity() {
         binding.btnShare.setOnClickListener { shareCurrentPdf() }
     }
 
+    /** Punto de entrada del botón "Escanear documento". La primera vez, muestra antes
+     *  el aviso de "Agregar página" (para que no se confunda con "Siguiente"); luego
+     *  ya no vuelve a aparecer y va directo al escáner. */
     private fun startScan() {
+        if (prefs.getBoolean(KEY_SEEN_ADD_PAGE_TIP, false)) {
+            launchDocumentScanner()
+        } else {
+            // Se marca como visto ya al mostrarlo (no solo al tocar "Entendido"): así el
+            // aviso realmente aparece una única vez, aunque el usuario lo cierre sin leerlo.
+            prefs.edit().putBoolean(KEY_SEEN_ADD_PAGE_TIP, true).apply()
+            AddPageTipDialogFragment { launchDocumentScanner() }
+                .show(supportFragmentManager, "add_page_tip")
+        }
+    }
+
+    /** Abre la pantalla de escaneo de Google ML Kit (detección de bordes, recorte y PDF). */
+    private fun launchDocumentScanner() {
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(true)
             .setPageLimit(20)
@@ -195,5 +211,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_FOLDER_URI = "folder_uri"
+        private const val KEY_SEEN_ADD_PAGE_TIP = "seen_add_page_tip"
     }
 }

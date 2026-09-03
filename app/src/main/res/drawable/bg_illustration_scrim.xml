@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fondo oscuro redondeado que representa (sin copiar) la pantalla de escaneo de Google,
+     para el aviso "Agregar página" que se muestra antes de escanear por primera vez. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#1E1F21" />
+    <corners android:radius="14dp" />
+</shape>

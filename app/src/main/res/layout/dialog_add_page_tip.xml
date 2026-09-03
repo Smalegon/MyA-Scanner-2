@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="28dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="¿Vas a escanear más de una hoja?"
+        android:textColor="@color/purple_700"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="Cuando termines una página, toca el ícono marcado para agregar la siguiente. O el botón &quot;Siguiente&quot; para compartir o guardar."
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:lineSpacingMultiplier="1.2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="ASÍ SE VE EN LA PANTALLA DE ESCANEO"
+        android:textColor="@color/text_muted"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.02" />
+
+    <!-- Ilustración: representa (sin copiar) la pantalla de escaneo de Google -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_illustration_scrim">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:padding="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/shape_pill_outline"
+                android:gravity="center"
+                android:text="Descartar escaneo"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_pill_filled_light"
+                android:gravity="center"
+                android:text="Siguiente"
+                android:textColor="@color/purple_700"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/bg_add_page_circle">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add_page"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <View
+            android:id="@+id/pulseRing"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="9dp"
+            android:background="@drawable/pulse_ring" />
+
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnGotIt"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Entendido, empezar a escanear"
+        android:textSize="16sp"
+        app:cornerRadius="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Este aviso solo aparece la primera vez."
+        android:textColor="@color/text_muted"
+        android:textSize="11.5sp" />
+
+</LinearLayout>

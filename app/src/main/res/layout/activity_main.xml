@@ -91,6 +91,15 @@
             android:background="#DDDDDD" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveAndShare"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="12dp"
+            android:enabled="false"
+            android:text="💾📤  Guardar y compartir"
+            app:cornerRadius="16dp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -104,7 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:enabled="false"
-            android:text="📤  Compartir (WhatsApp / Correo)"
+            android:text="📤  Compartir"
             app:cornerRadius="16dp" />
 
     </LinearLayout>
